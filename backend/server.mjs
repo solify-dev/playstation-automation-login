@@ -14,12 +14,10 @@ app.get("/health", (_req, res) => {
   res.json({ ok: true });
 });
 
-/** Default sender for PSN / Sony account verification emails */
-const DEFAULT_FROM = "sony@email03.account.sony.com";
-
 /**
  * Extract 6-digit Sony sign-in verification code from plain text / stripped HTML.
  * Matches: "916331 is your verification code for your Sony account."
+ * Does not use a bare 6-digit match (avoids wrong codes from unrelated recent mail).
  */
 function extractSonyCode(text) {
   if (!text) return null;
@@ -39,7 +37,6 @@ function extractSonyCode(text) {
   const fallback = [
     /\bverification code[^0-9]{0,20}(\d{6})\b/i,
     /\bsecurity code[^0-9]{0,20}(\d{6})\b/i,
-    /\b(\d{6})\b/,
   ];
   for (const re of fallback) {
     const m = text.match(re);
@@ -65,8 +62,6 @@ async function fetchLatestSonyCode({
   imapUser,
   imapPass,
   mailbox = "INBOX",
-  /** Match sender: full address or substring (e.g. email03.account.sony.com) */
-  fromEmail = DEFAULT_FROM,
   lookbackMinutes = 30,
 }) {
   const client = new ImapFlow({
@@ -81,31 +76,15 @@ async function fetchLatestSonyCode({
     await client.mailboxOpen(mailbox);
     const since = new Date(Date.now() - Number(lookbackMinutes) * 60 * 1000);
 
-    // IMAP FROM: full address when possible (matches sony@email03.account.sony.com),
-    // else substring (e.g. domain-only override).
-    const fromToken =
-      fromEmail.includes("@") ? fromEmail.split("@")[1] || fromEmail : fromEmail;
-    const searchFrom = fromEmail.includes("@") ? fromEmail : fromToken;
+    // Recent mail only — no FROM filter; scan newest-first for Sony verification text.
+    const uids = await client.search({ since });
+    const latestNewestFirst = uids.slice(-25).reverse();
 
-    const searchQuery = {
-      since,
-      from: searchFrom,
-    };
-
-    const uids = await client.search(searchQuery);
-    const latest = uids.slice(-25).reverse();
-
-    for await (const msg of client.fetch(latest, {
+    for await (const msg of client.fetch(latestNewestFirst, {
       envelope: true,
       source: true,
     })) {
       const subject = msg.envelope?.subject ?? "";
-      const fromAddr = msg.envelope?.from?.[0]?.address ?? "";
-      // Optional strict filter: must be Sony account mail
-      if (fromEmail && fromAddr && !fromAddr.toLowerCase().includes("account.sony.com")) {
-        continue;
-      }
-
       let text = subject + "\n";
       if (msg.source) {
         text += rawToSearchableText(msg.source);
@@ -123,7 +102,6 @@ async function fetchLatestSonyCode({
 app.post("/api/sony/verification-code", async (req, res) => {
   console.log("[sony/verification-code] request from extension");
   const body = req.query ?? {};
-  console.log(req);
   const required = ["imapHost", "imapPort", "imapUser", "imapPass"];
   for (const key of required) {
     if (!body[key]) {
@@ -131,10 +109,7 @@ app.post("/api/sony/verification-code", async (req, res) => {
     }
   }
 
-  const payload = {
-    ...body,
-    fromEmail: body.fromEmail?.trim() || DEFAULT_FROM,
-  };
+  const payload = { ...body };
 
   try {
     const code = await fetchLatestSonyCode(payload);
