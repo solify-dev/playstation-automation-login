@@ -13,9 +13,11 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
     })
       .then(async (res) => {
         const data = await res.json().catch(() => ({}));
+        console.log("[FETCH_SONY_VERIFICATION_CODE] status:", res.status, "ok:", Boolean(data?.ok));
         sendResponse({ ok: true, httpStatus: res.status, data });
       })
       .catch((err) => {
+        console.error("[FETCH_SONY_VERIFICATION_CODE] error:", err);
         sendResponse({ ok: false, error: String(err?.message || err) });
       });
     return true;
@@ -35,17 +37,28 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
   // Acknowledge immediately to avoid popup channel close on navigation.
   sendResponse({ ok: true, message: "Login automation started." });
 
-  chrome.tabs.sendMessage(
-    tabId,
-    {
-      type: "RUN_PS_LOGIN_IN_TAB",
-      payload,
-    },
-    () => {
-      // Fire-and-forget. Content script persists state and continues after redirects.
-      void chrome.runtime.lastError;
-    },
-  );
+  const task = {
+    type: "RUN_PS_LOGIN_IN_TAB",
+    payload,
+  };
+  chrome.tabs.sendMessage(tabId, task, () => {
+    if (!chrome.runtime.lastError) {
+      return;
+    }
+    // Ensure content script exists (after extension reload/new tab timing), then retry once.
+    chrome.scripting.executeScript(
+      {
+        target: { tabId, allFrames: true },
+        files: ["content.js"],
+      },
+      () => {
+        void chrome.runtime.lastError;
+        chrome.tabs.sendMessage(tabId, task, () => {
+          void chrome.runtime.lastError;
+        });
+      },
+    );
+  });
 
   return false;
 });
