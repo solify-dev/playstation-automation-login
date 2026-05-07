@@ -1,0 +1,8 @@
+node_modules/
+dist/
+.env
+.playwright/
+*.log
+storage-state.json
+psn-accounts.json
+.psn-sessions/

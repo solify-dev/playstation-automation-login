@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <title>PS Auto Login</title>
+    <link rel="stylesheet" href="./popup.css" />
+  </head>
+  <body>
+    <main class="app">
+      <h1>PS Auto Login</h1>
+
+      <label for="email">Sign-in Email</label>
+      <input id="email" type="email" autocomplete="username" placeholder="name@example.com" />
+
+      <label for="password">Password</label>
+      <input id="password" type="password" autocomplete="current-password" />
+
+      <hr />
+      <label for="backendUrl">Backend URL</label>
+      <input id="backendUrl" type="text" placeholder="http://127.0.0.1:8787" />
+
+      <label for="imapHost">IMAP Host</label>
+      <input id="imapHost" type="text" placeholder="imap.gmail.com" />
+
+      <div class="split">
+        <div>
+          <label for="imapPort">IMAP Port</label>
+          <input id="imapPort" type="number" value="993" />
+        </div>
+        <div>
+          <label for="imapSecure">Secure</label>
+          <select id="imapSecure">
+            <option value="true" selected>true</option>
+            <option value="false">false</option>
+          </select>
+        </div>
+      </div>
+
+      <label for="imapUser">Email Inbox User</label>
+      <input id="imapUser" type="text" />
+
+      <label for="imapPass">Email Inbox Password/App Password</label>
+      <input id="imapPass" type="password" />
+
+      <label class="row">
+        <input id="remember" type="checkbox" />
+        <span>Remember in extension storage</span>
+      </label>
+
+      <button id="run">Run Login</button>
+      <p id="status" aria-live="polite"></p>
+    </main>
+    <script type="module" src="./popup.js"></script>
+  </body>
+</html>

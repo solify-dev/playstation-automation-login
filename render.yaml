@@ -1,0 +1,11 @@
+# Render Blueprint: deploy only the Sony verification API (no Playwright).
+# Dashboard: https://dashboard.render.com → New → Blueprint → connect this repo
+services:
+  - type: web
+    name: playstation-verification-api
+    runtime: node
+    region: oregon
+    plan: free
+    buildCommand: npm install --ignore-scripts
+    startCommand: node backend/server.mjs
+    healthCheckPath: /health

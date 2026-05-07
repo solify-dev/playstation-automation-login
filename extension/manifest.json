@@ -1,0 +1,39 @@
+{
+  "manifest_version": 3,
+  "name": "PlayStation Auto Login Helper",
+  "version": "1.0.0",
+  "description": "Fill and submit PlayStation sign-in flow from extension popup.",
+  "permissions": ["storage", "tabs", "scripting"],
+  "host_permissions": [
+    "https://www.playstation.com/*",
+    "https://*.account.sony.com/*",
+    "https://my.account.sony.com/*",
+    "https://id.sonyentertainmentnetwork.com/*",
+    "https://*.sonyentertainmentnetwork.com/*",
+    "http://127.0.0.1/*",
+    "http://localhost/*",
+    "https://*.onrender.com/*"
+  ],
+  "action": {
+    "default_title": "PS Auto Login",
+    "default_popup": "popup.html"
+  },
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://www.playstation.com/*",
+        "https://*.account.sony.com/*",
+        "https://my.account.sony.com/*",
+        "https://id.sonyentertainmentnetwork.com/*",
+        "https://*.sonyentertainmentnetwork.com/*"
+      ],
+      "js": ["content.js"],
+      "run_at": "document_idle",
+      "all_frames": true
+    }
+  ]
+}

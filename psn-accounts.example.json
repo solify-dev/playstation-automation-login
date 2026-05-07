@@ -1,0 +1,11 @@
+[
+  {
+    "email": "first@example.com",
+    "password": "your-secret-password"
+  },
+  {
+    "email": "second@example.com",
+    "password": "another-password",
+    "label": "optional nickname for logs only"
+  }
+]
