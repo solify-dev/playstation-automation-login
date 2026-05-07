@@ -122,7 +122,7 @@ async function fetchLatestSonyCode({
 
 app.post("/api/sony/verification-code", async (req, res) => {
   console.log("[sony/verification-code] request from extension");
-  const body = req.body ?? {};
+  const body = req.query ?? {};
   console.log(req);
   const required = ["imapHost", "imapPort", "imapUser", "imapPass"];
   for (const key of required) {
