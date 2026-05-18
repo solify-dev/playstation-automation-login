@@ -28,10 +28,38 @@ label {
   opacity: 0.9;
 }
 
+.field {
+  display: grid;
+  gap: 4px;
+}
+
+.otp-mode-fieldset {
+  border: 1px solid #2f3443;
+  border-radius: 8px;
+  margin: 0;
+  padding: 8px 10px 10px;
+}
+
+.otp-mode-fieldset legend {
+  padding: 0 4px;
+  font-size: 12px;
+  opacity: 0.95;
+}
+
+.is-hidden {
+  display: none !important;
+}
+
+#accounts {
+  font-family: ui-monospace, "Cascadia Code", Consolas, monospace;
+  font-size: 11px;
+}
+
 input[type="email"],
 input[type="password"],
 input[type="text"],
 input[type="number"],
+textarea,
 select {
   width: 100%;
   border: 1px solid #2f3443;
@@ -39,6 +67,11 @@ select {
   color: #fff;
   border-radius: 8px;
   padding: 8px;
+}
+
+textarea {
+  resize: vertical;
+  min-height: 120px;
 }
 
 .split {
@@ -60,6 +93,15 @@ hr {
   font-size: 12px;
 }
 
+.button-row {
+  display: flex;
+  gap: 8px;
+}
+
+.button-row button {
+  flex: 1;
+}
+
 button {
   border: none;
   border-radius: 8px;
@@ -72,6 +114,14 @@ button {
 
 button:hover {
   background: #1d4ed8;
+}
+
+button.button-danger {
+  background: #b91c1c;
+}
+
+button.button-danger:hover {
+  background: #991b1b;
 }
 
 #status {

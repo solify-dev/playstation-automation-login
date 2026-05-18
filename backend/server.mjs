@@ -71,6 +71,9 @@ async function fetchLatestSonyCode({
     auth: { user: imapUser, pass: imapPass },
   });
 
+  console.log("IMAP Client >>>", client);
+  
+
   await client.connect();
   try {
     await client.mailboxOpen(mailbox);
@@ -79,6 +82,8 @@ async function fetchLatestSonyCode({
     // Recent mail only — no FROM filter; scan newest-first for Sony verification text.
     const uids = await client.search({ since });
     const latestNewestFirst = uids.slice(-25).reverse();
+    console.log("Latest Newest >>>", latestNewestFirst);
+    
 
     for await (const msg of client.fetch(latestNewestFirst, {
       envelope: true,

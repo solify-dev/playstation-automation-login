@@ -10,45 +10,39 @@
     <main class="app">
       <h1>PS Auto Login</h1>
 
-      <label for="email">Sign-in Email</label>
-      <input id="email" type="email" autocomplete="username" placeholder="name@example.com" />
+      <fieldset class="field otp-mode-fieldset">
+        <legend>Second factor (all accounts)</legend>
+        <label class="row">
+          <input id="otp_mode_secret" type="radio" name="otp_mode" value="secret" checked />
+          <span>TOTP secret (Base32) per line</span>
+        </label>
+        <label class="row">
+          <input id="otp_mode_code" type="radio" name="otp_mode" value="code" />
+          <span>OTP code per line</span>
+        </label>
+      </fieldset>
 
-      <label for="password">Password</label>
-      <input id="password" type="password" autocomplete="current-password" />
-
-      <hr />
-      <label for="backendUrl">Backend URL</label>
-      <input id="backendUrl" type="text" placeholder="http://127.0.0.1:8787" />
-
-      <label for="imapHost">IMAP Host</label>
-      <input id="imapHost" type="text" placeholder="imap.gmail.com" />
-
-      <div class="split">
-        <div>
-          <label for="imapPort">IMAP Port</label>
-          <input id="imapPort" type="number" value="993" />
-        </div>
-        <div>
-          <label for="imapSecure">Secure</label>
-          <select id="imapSecure">
-            <option value="true" selected>true</option>
-            <option value="false">false</option>
-          </select>
-        </div>
+      <div class="field">
+        <label for="accounts">Accounts (one per line)</label>
+        <textarea
+          id="accounts"
+          name="accounts"
+          rows="10"
+          autocomplete="off"
+          spellcheck="false"
+          placeholder="email,password,totp_secret_or_code&#10;One line per account (up to 5+)"
+        ></textarea>
       </div>
-
-      <label for="imapUser">Email Inbox User</label>
-      <input id="imapUser" type="text" />
-
-      <label for="imapPass">Email Inbox Password/App Password</label>
-      <input id="imapPass" type="password" />
 
       <label class="row">
         <input id="remember" type="checkbox" />
         <span>Remember in extension storage</span>
       </label>
 
-      <button id="run">Run Login</button>
+      <div class="button-row">
+        <button id="run" type="button">Run</button>
+        <button id="stop" type="button" class="button-danger">Stop</button>
+      </div>
       <p id="status" aria-live="polite"></p>
     </main>
     <script type="module" src="./popup.js"></script>
